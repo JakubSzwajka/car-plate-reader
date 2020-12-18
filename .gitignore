@@ -1,0 +1,5 @@
+*.jpg
+*.png
+*.vscode
+__pycache__
+**/plate_recognition
