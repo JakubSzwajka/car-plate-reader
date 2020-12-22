@@ -14,7 +14,7 @@ def plot_plate(vehicle_photo, LpImg , cor):
     fig.add_subplot(grid[1])
     plt.axis(False)
     plt.imshow(LpImg[0])
-    plt.show()
+    # plt.show()
 
 def plot_grey_scale_plates(plate_image, gray, blur, binary, thre_mor ):
     fig = plt.figure(figsize=(12,7))
@@ -33,7 +33,7 @@ def plot_grey_scale_plates(plate_image, gray, blur, binary, thre_mor ):
             plt.imshow(plot_image[i],cmap="gray")
 
     plt.savefig(settings.PROCES_PHOTO_FOLDER + "threshding.png", dpi=300)
-    plt.show()
+    # plt.show()
 
 
 def sort_contours(cnts,reverse = False):
@@ -74,7 +74,7 @@ def get_letter_contours( binary , plate_image , test_roi , thre_mor):
     plt.imshow(test_roi)
     plt.savefig(settings.PROCES_PHOTO_FOLDER + 'grab_digit_contour.png',dpi=300)
 
-    plt.show()
+    # plt.show()
 
     fig = plt.figure(figsize=(14,4))
     grid = gridspec.GridSpec(ncols=len(crop_characters),nrows=1,figure=fig)
@@ -85,5 +85,5 @@ def get_letter_contours( binary , plate_image , test_roi , thre_mor):
         plt.imshow(crop_characters[i],cmap="gray")
     
     plt.savefig(settings.PROCES_PHOTO_FOLDER + "segmented_leter.png",dpi=300)
-    plt.show()
+    # plt.show()
     return crop_characters 
