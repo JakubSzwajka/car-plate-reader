@@ -1,7 +1,10 @@
 # pylint: disable=invalid-name, redefined-outer-name, missing-docstring, non-parent-init-called, trailing-whitespace, line-too-long
 import cv2
 import numpy as np
+import time 
 
+def logger(message):
+    print(f'{time.ctime()}: ',message)
 
 class Label:
     def __init__(self, cl=-1, tl=np.array([0., 0.]), br=np.array([0., 0.]), prob=None):

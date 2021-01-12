@@ -15,7 +15,7 @@ import glob
 
 # extra scripts
 import settings
-from local_utils import detect_lp
+from local_utils import detect_lp, logger
 import plate_finder_methods as pfm
 import letters_finder as lf
 import letter_recognition as lr
@@ -25,25 +25,33 @@ import plotter
 # from importlib import reload  
 # reload(glob)
 
-# FIND PLATE
+plates = []
+
+# ----------- FIND PLATE ----------------------------------------------
+# ----------- Load model for plate in image recognition ---------------
 wpod_net = pfm.load_model_plate_recognition(settings.WPOD_NET_PATH)
-vehicle, LpImg,cor = pfm.get_plate(settings.TEST_IMAGE_PATH, wpod_net)
 
-if len(LpImg) > 0:
-    print("Found " , len(LpImg) , " plates")
-    plotter.plot_plate(vehicle, LpImg, cor)
+# ----------- Load model architecture, weight and labels --------------
+letter_model, labels = lr.load_models(settings.MODELS_PATH)
 
-    # FIND LETTERS 
-    plate_image, gray, blur, binary, thre_mor = lf.grey_scale_img(LpImg)
-    plotter.plot_grey_scale_plates(plate_image, gray, blur, binary, thre_mor)
+# ----------- Get Car/ LicencePlate/ and coordinates ------------------
+LpImg = pfm.get_plate(settings.TEST_IMAGE_PATH, wpod_net)
+logger("Found " + str(len(LpImg)) + " plates")
 
-    # # creat a copy version "test_roi" of plat_image to draw bounding box
+# ----------- for plate in plates array ------------------------------- 
+for plate in LpImg:
+    if settings.PLOT_IMGS: plotter.plot_plate(plate)
+    # ------------- FIND LETTERS -------------------------------------- 
+    plate_image, gray, blur, binary, thre_mor = lf.grey_scale_img(plate)
+    if settings.PLOT_IMGS: plotter.plot_grey_scale_plates(plate_image, gray, blur, binary, thre_mor)
+
+    # -------------- creat a copy version "test_roi" of plat_image to draw bounding box
     test_roi = plate_image.copy()
-    crop_characters = plotter.get_letter_contours( binary , plate_image ,test_roi, thre_mor)
+    crop_characters = lf.get_letter_contours( binary , plate_image ,test_roi, thre_mor)
+    if settings.PLOT_IMGS: plotter.plot_letters_on_plate(test_roi, crop_characters)
+    if settings.PLOT_IMGS: plotter.plot_binary_plate(crop_characters)
 
-    # Load model architecture, weight and labels
-    letter_model, labels = lr.load_models(settings.MODELS_PATH)
-    print(lr.get_plate_string( crop_characters, letter_model, labels))
+    plate = lr.get_plate_string( crop_characters, letter_model, labels)
+    plates.append(plate)
 
-else: 
-    print("No plates found!")
+logger(plates)
